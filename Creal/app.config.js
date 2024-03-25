@@ -44,14 +44,7 @@ export default{
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": true
         },
-        "expo-document-picker",
-        {
-          "iCloudContainerEnvironment": "Production"
-        },
-        "expo-calendar",
-        {
-          "calendarPermission": "The app needs to access your calendar."
-        }
+        
       ]
     ],
     
