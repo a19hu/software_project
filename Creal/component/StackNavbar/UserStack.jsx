@@ -20,13 +20,20 @@ export default function UserStack() {
     class:'',
     course:''
   })
+  const [studentdetails,setstuydentdetails]=useState({
+    id:'',
+    class:'',
+    course:'',
+    classCode:'',
+    email:''
+  })
   const [classid,setclassid]= useState('hii')
-  console.log('classid',classid)
+  // console.log('classid',classid)
 
   return (
       <Stack.Navigator screenOptions={{headerShown: false }}>
         <Stack.Screen name="home" component={Home}   
-        initialParams={{ setdetails: setdetails,classid:classid}} 
+        initialParams={{ setdetails: setdetails,classid:classid,setstuydentdetails:setstuydentdetails}} 
         />
         <Stack.Screen name="Todo" component={Todo } />
         <Stack.Screen name="Coursedetails" component={Coursedetails } />
@@ -46,6 +53,7 @@ export default function UserStack() {
         
         />
         <Stack.Screen name="ClassStudent" component={ClassStudent} 
+        initialParams={{studentdetails:studentdetails }}
         />
 
       </Stack.Navigator>

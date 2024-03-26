@@ -12,7 +12,7 @@ export default function Home({route }) {
   const [todos, setTodos] = useState([]);
   const [classjoin,setclassjoin]=useState([])
   const [code,setcode]= useState([])
-  const { classid,setdetails} = route.params;
+  const { classid,setdetails,setstuydentdetails} = route.params;
   // console.log('code',code)
   // const classid= 'fjqSdJD7lV3I7b9s1Q2w'
   // console.log('id',classid)
@@ -43,7 +43,7 @@ export default function Home({route }) {
     firebase.firestore().collection('studentclasscode').where('userId', '==', currentUser.uid).onSnapshot(snapshot => {
       const todosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       // setTodos(todosData);
-      console.log('joindata',todosData)
+      // console.log('joindata',todosData)
       setcode(todosData)
     });
   }
@@ -71,6 +71,21 @@ export default function Home({route }) {
         classCode:classcode
       })
       navigation.navigate('Bottomstudent')
+    } catch (error) {
+
+    }
+  }
+  const hadlestudentcourse=async(Id, classname, coursename,classcode,email)=>{
+    navigation.navigate('ClassStudent')
+    try {
+
+      await setstuydentdetails({
+        id: Id,
+        class: classname,
+        course: coursename,
+        classCode:classcode,
+        email:email
+      })
     } catch (error) {
 
     }
@@ -112,7 +127,7 @@ export default function Home({route }) {
         <View style={styles.classcontainer} >
           {classjoin && classjoin.map((item,index)=>(
 
-          <TouchableOpacity style={styles.class} onPress={() => navigation.navigate('ClassStudent')}>
+          <TouchableOpacity style={styles.class} key={index} onPress={() => hadlestudentcourse(item.id,item.class,item.course,item.classCode,item.email)}>
  <Button
         title='Remove '
         onPress={() => handleRemovestudentclass(item.id)}

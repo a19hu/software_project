@@ -9,11 +9,17 @@ export default function Coursedetails({route}) {
     await Clipboard.setStringAsync(details.classCode);
   };
 
+
+
+
+
+
+  
   return (
     <View>
       <TouchableOpacity style={styles.class} >
 <Text style={styles.classtext} >{details.class} {details.id}</Text>
-<Button title="copy to classcode" onPress={copyToClipboard} />
+<Button title="copy tId,claso classcode" onPress={copyToClipboard} />
 </TouchableOpacity>
     </View>
   )
