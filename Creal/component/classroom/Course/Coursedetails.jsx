@@ -1,29 +1,25 @@
-import { View, Text,TouchableOpacity,StyleSheet, } from 'react-native'
-import React from 'react'
-
+import { View, Text,TouchableOpacity,StyleSheet,Button } from 'react-native'
+import React,{useState} from 'react'
+import * as Clipboard from 'expo-clipboard';
 export default function Coursedetails({route}) {
+
   const { details } = route.params;
+
+  const copyToClipboard = async () => {
+    await Clipboard.setStringAsync(details.classCode);
+  };
+
   return (
     <View>
       <TouchableOpacity style={styles.class} >
-
-
 <Text style={styles.classtext} >{details.class} {details.id}</Text>
+<Button title="copy to classcode" onPress={copyToClipboard} />
 </TouchableOpacity>
     </View>
   )
 }
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-   
-  },
-  add:{
-    position:'absolute',
-    bottom:10,
-    right:10,
-    zIndex:100
-  },
+
   class:{
     height:100,
     width:'94%',
@@ -32,13 +28,6 @@ const styles = StyleSheet.create({
     // marginBottom:10,
     marginTop:10,
     padding:20
-  },
-  classcontainer:{
-    // paddingTop:20,
-    // flex:1,
-    // justifyContent:'center',
-     alignItems:'center',
-     position:'relative'
   },
   classtext:{
     color:'white'

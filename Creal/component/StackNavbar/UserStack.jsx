@@ -20,18 +20,24 @@ export default function UserStack() {
     class:'',
     course:''
   })
+  const [classid,setclassid]= useState('hii')
+  console.log('classid',classid)
 
   return (
       <Stack.Navigator screenOptions={{headerShown: false }}>
         <Stack.Screen name="home" component={Home}   
-        initialParams={{ setdetails: setdetails }} 
+        initialParams={{ setdetails: setdetails,classid:classid}} 
         />
         <Stack.Screen name="Todo" component={Todo } />
         <Stack.Screen name="Coursedetails" component={Coursedetails } />
         <Stack.Screen name="Attendencephoto" component={Attendencephoto } />
 
-        <Stack.Screen name="Createclass" component={Createclass } />
-        <Stack.Screen name="joinclass" component={Joinclass } />
+        <Stack.Screen name="Createclass" component={Createclass } 
+        />
+        <Stack.Screen name="joinclass" component={Joinclass } 
+        initialParams={{setclassid:setclassid}} 
+        
+        />
         <Stack.Screen name="Profile" component={Profile} /> 
         <Stack.Screen name="Notification" component={Notification} />
         <Stack.Screen name="AddClass" component={AddClass} options={{headerShown:true}}/>

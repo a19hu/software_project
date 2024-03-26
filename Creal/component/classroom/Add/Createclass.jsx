@@ -6,34 +6,49 @@ if (!firebase.apps.length) {
 }
 export default function Createclass() {
     const [value, setValue] = useState({
-        class: '',
-        course: '',
+      class: '',
+        course: ''
       })
-      const prefix = 'COURSE';
-const timestamp = Date.now().toString(36);
-const randomNumber = Math.random().toString(36);
-const courseId = `${prefix}-${timestamp}-${randomNumber}`;
+      const generateClassCode=()=>{
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+        let classCode = '';
+        const codeLength = 6;
+       for (let i = 0; i < codeLength; i++) {
+                 const randomIndex = Math.floor(Math.random() * characters.length);
+                 classCode += characters.charAt(randomIndex);
+        }
 
+       return classCode;
+      }
     const handleAddTodo = () => {
         const currentUser = firebase.auth().currentUser;
         if (currentUser) {
-          firebase.firestore().collection('classcreate').add({
+          firebase.firestore().collection('ClassCreateByAdmin').add({
             ...value,
             userId: currentUser.uid,
+            email:currentUser.email,
+            classCode: generateClassCode(),
           })
-            .then(() => {
+            .then((docRef) => {
               console.log('Todo added successfully');
-              setValue();
+              // firebase.firestore().collection('classcode').add({
+              //   classcode:docRef,
+              //   adminname:currentUser.displayName,
+              //   email:currentUser.email,
+              //   ...value
+              // })
+              setValue({ class: '', course: '' });
             })
             .catch(error => console.error('Error adding todo: ', error));
         }
+
       };
     
   return (
     <View>
       <Text>Createclass</Text>
       <TextInput
-      placeholder='class name'
+      placeholder='classname'
       value={value.class}
       onChangeText={(text) => setValue({ ...value,class: text })}
       

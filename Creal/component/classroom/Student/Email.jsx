@@ -2,7 +2,7 @@ import { View, Text,Button,TextInput } from 'react-native'
 import React,{useState,useEffect} from 'react'
 import * as MailComposer from 'expo-mail-composer';
 import * as Print from 'expo-print';
-import logo from '../../../Image/logo.png'
+import logo from '../../../Image/login.png'
 export default function Email() {
   const [available,setavailable]= useState(false)
   const [recipients,setrecipients]=useState([])

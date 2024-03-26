@@ -4,30 +4,44 @@ import {firebase,firebaseConfig} from '../../../firebase'
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
-export default function Joinclass({navigation}) {
+export default function Joinclass({ route }) {
+  const { setclassid} = route.params;
+
     const [courseid,setcourseid]=useState()
     const handleadd=async()=>{
-    setcourseid('')
-    // navigation.navigate('Coursedetails')
-    const data = await getDocumentById(courseid);
-console.log('Document data:', data);
+      // navigation.navigate('Coursedetails')
+      const data = await joinClass(courseid);
+      setcourseid('')
 
     }
-    const getDocumentById = async (documentId) => {
-        try {
-            const querySnapshot = await firebase.firestore().collection('studentlist')
-                                                  .where('courseid', '==', documentId)
-                                                  .get();
-            const documents = [];
-            querySnapshot.forEach(doc => {
-              documents.push({ id: doc.id, ...doc.data() });
-            });
-            return documents;
-        } catch (error) {
-          console.error('Error getting document:', error);
-          throw error;
+    const joinClass = async (classCode) => {
+      const currentUser = firebase.auth().currentUser;
+      if(currentUser){
+        firebase.firestore().collection('studentclasscode').add({
+      classcode:courseid,
+      userId: currentUser.uid,
+      email:currentUser.email
+        })
+      }
+      try {
+        const querySnapshot = await firebase.firestore().collection('ClassCreateByAdmin').where('classCode', '==', classCode).get();
+        if (querySnapshot.empty) {
+          throw new Error('Class not found with this code');
         }
-      };
+        const classDoc = querySnapshot.docs[0];
+        const classId = classDoc.id;
+        await classDoc.ref.collection('students').doc(currentUser.uid).set({
+          name:currentUser.email,
+          
+        });
+        return classId; 
+      } catch (error) {
+        console.error('Error joining class: ', error);
+        throw error;
+      }
+      
+    };
+    
   return (
     <View>
      <TextInput
