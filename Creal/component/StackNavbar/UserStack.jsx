@@ -10,6 +10,7 @@ import Bottomstudent from '../Navbar/Bottomstudent';
 import Createclass from '../classroom/Add/Createclass';
 import Joinclass from '../classroom/Add/Joinclass';
 import ClassStudent from '../Navbar/ClassStudent';
+import Attendencephoto from '../classroom/Student/Attendencephoto';
 import Coursedetails from '../classroom/Course/Coursedetails';
 const Stack = createStackNavigator();
 
@@ -27,6 +28,7 @@ export default function UserStack() {
         />
         <Stack.Screen name="Todo" component={Todo } />
         <Stack.Screen name="Coursedetails" component={Coursedetails } />
+        <Stack.Screen name="Attendencephoto" component={Attendencephoto } />
 
         <Stack.Screen name="Createclass" component={Createclass } />
         <Stack.Screen name="joinclass" component={Joinclass } />

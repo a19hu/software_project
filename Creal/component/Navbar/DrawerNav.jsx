@@ -8,6 +8,7 @@ import logo from '../../Image/logo.png'
 import Todo from '../Screen/Todo/Todo';
 import { FontAwesome } from '@expo/vector-icons';
 import Profile from '../Screen/profile/Profile'
+import Play from '../Screen/play/Play';
 import UserStack from '../StackNavbar/UserStack';
 // import { useNavigation } from '@react-navigation/native';
 const Drawer = createDrawerNavigator();
@@ -40,8 +41,9 @@ export default function DrawerNav() {
       
       <Drawer.Screen name="Home" component={UserStack}/>
       <Drawer.Screen name="Notification" component={Notification} />
-      {/* <Drawer.Screen name="Todo" component={Todo} /> */}
+      <Drawer.Screen name="Todo" component={Todo} />
       <Drawer.Screen name="profile" component={Profile} />
+      <Drawer.Screen name="Game" component={Play} />
 
     </Drawer.Navigator>
     </NavigationContainer>
