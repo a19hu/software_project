@@ -54,7 +54,7 @@ export default function Createclass() {
       
       />
       <TextInput
-      placeholder='course'
+      placeholder='admin name'
       value={value.course}
       onChangeText={(text) => setValue({ ...value,course: text })}
       

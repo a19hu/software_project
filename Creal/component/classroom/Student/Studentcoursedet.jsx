@@ -1,17 +1,20 @@
 import { View, Text,Button,TextInput} from 'react-native'
 import React,{useState,useEffect} from 'react'
 import {auth, firebase,firebaseConfig} from '../../../firebase'
-import { where } from '@firebase/firestore';
+import { query, where } from '@firebase/firestore';
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
-export default function Studentcoursedet({route}) {
+export default function Studentcoursedet({route,navigation}) {
   const { studentdetails } = route.params;
   const [textes,settext]= useState()
-  const [note,setnote] = useState([])
+  const [notestudent,setnotestudent] = useState([])
+  const [noteadmin,setnoteadmin] = useState([])
   const id =studentdetails.id
+  const adminemail= studentdetails.email
  useEffect(()=>{
   fetchmassage(id)
+  fetchmassageAdmin(id)
 
  },[])
  const currentDate = new Date();
@@ -33,9 +36,28 @@ export default function Studentcoursedet({route}) {
     try{
       firebase.firestore().collection('ClassCreateByAdmin').doc(Id).collection('massages').where('email', '==', uid).onSnapshot(snapshot => {
         const todosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        console.log(todosData)
-        setnote(todosData)
+        // console.log('student',todosData)
+        setnotestudent(todosData)
       });
+    }catch(err){
+
+    }
+      
+   }
+   const fetchmassageAdmin=()=>{
+    try{
+      firebase.firestore().collection('ClassCreateByAdmin').get()
+      .then(QuerySnapshot=>{
+        QuerySnapshot.forEach(classdoc=>{
+          firebase.firestore().collection('ClassCreateByAdmin').doc(classdoc.id).collection('massages').where('email', '==', adminemail).onSnapshot(saapshot=>{
+            const todosData = saapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setnoteadmin(todosData)
+          })
+          
+        })
+        }
+      )
+      
     }catch(err){
 
     }
@@ -43,6 +65,7 @@ export default function Studentcoursedet({route}) {
    }
 
   const hadleIncourse=async(Id)=>{
+    console.log('id',Id)
     const currentUser = firebase.auth().currentUser;
     const uid= currentUser.email
     console.log('text',textes)
@@ -52,7 +75,6 @@ export default function Studentcoursedet({route}) {
       await ref.add({
         email:uid,
         textes,
-        // markedAt: firebase.firestore.FieldValue.serverTimestamp(),
         date,
         time
       });
@@ -77,10 +99,15 @@ export default function Studentcoursedet({route}) {
       />
 
       <Button title='add' onPress={()=>hadleIncourse(id)}/>
-      {note && note.map((item,index)=>(
+      {noteadmin && noteadmin.map((item,index)=>(
         <Text key={index}>{item.email}  {item.date} {item.time} {item.textes} </Text>
         ))}
- 
+        {notestudent && notestudent.map((item,index)=>(
+        <Text key={index}>{item.email}  {item.date} {item.time} {item.textes} </Text>
+        ))}
+ <Button title='camera' onPress={()=> navigation.navigate('studentcamera')}
+//  disabled={true}
+ />
     </View>
   )
 }

@@ -10,7 +10,7 @@ export default function CalendarExample() {
     const [selectedDate, setSelectedDate] = useState(null);
     const handleDayPress = day => {
         setSelectedDate(day.dateString);
-        
+        console.log(day)
   navigation.navigate('Attendencephoto')
       };
       

@@ -8,74 +8,59 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
-export default function Home({route }) {
+export default function Home({ route }) {
   const [todos, setTodos] = useState([]);
-  const [classjoin,setclassjoin]=useState([])
-  const [code,setcode]= useState([])
-  const { classid,setdetails,setstuydentdetails} = route.params;
-  // console.log('code',code)
-  // const classid= 'fjqSdJD7lV3I7b9s1Q2w'
-  // console.log('id',classid)
-
+  const [classjoin,setclassjoin] = useState([])
+  // const [code, setcode] = useState([])
+  const {setdetails, setstuydentdetails } = route.params;
+  console.log(classjoin)
   useEffect(() => {
-    
-    joinclass()
-    unsubscribe()
-  }, []);
-  useEffect(()=>{
-    if (code.length > 0) {
-      code.forEach(codeItem => {
-  // console.log(codeItem.classcode)
-    classSnapshot(codeItem.classcode);
 
-      })
-    }
-  },[code])
-  const unsubscribe=()=>{
+    studentclass()
+    Adminclassroom()
+  }, []);
+
+  const Adminclassroom = () => {
     const currentUser = firebase.auth().currentUser;
     firebase.firestore().collection('ClassCreateByAdmin').where('userId', '==', currentUser.uid).onSnapshot(snapshot => {
       const todosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setTodos(todosData);
     });
   }
-  const joinclass=()=>{
+  const studentclass = () => {
     const currentUser = firebase.auth().currentUser;
-    firebase.firestore().collection('studentclasscode').where('userId', '==', currentUser.uid).onSnapshot(snapshot => {
-      const todosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      // setTodos(todosData);
-      // console.log('joindata',todosData)
-      setcode(todosData)
-    });
+    const email= currentUser.email
+    firebase.firestore().collection('ClassCreateByAdmin').get()
+    .then(QuerySnapshot=>{
+      QuerySnapshot.forEach(classdoc=>{
+        firebase.firestore().collection('ClassCreateByAdmin').doc(classdoc.id).collection('students').where('name','==',email).onSnapshot(saapshot=>{
+          const todosData = saapshot.docs.map(doc => ({ id: doc.id, ...classdoc.data() }));
+          setclassjoin(todosData)
+        })
+        
+      })
+      }
+    )
+   
   }
-  const classSnapshot = (classcodeid)=>{
-    // firebase.firestore().collection('ClassCreateByAdmin').doc(classid).collection('students').onSnapshot(snapshot => {
-    //   const todosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    //   console.log('data',todosData)
-    // });
-    firebase.firestore().collection('ClassCreateByAdmin').where('classCode', '==', classcodeid).onSnapshot(snapshot => {
-      const todosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      // console.log('join1',todosData)
-      setclassjoin(todosData)
-    });
-  }
-  
+
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
-  const handlecourse = async (Id, classname, coursename,classcode) => {
+  const handlecourse = async (Id, classname, coursename, classcode) => {
     try {
 
       await setdetails({
         id: Id,
         class: classname,
         course: coursename,
-        classCode:classcode
+        classCode: classcode
       })
       navigation.navigate('Bottomstudent')
     } catch (error) {
 
     }
   }
-  const hadlestudentcourse=async(Id, classname, coursename,classcode,email)=>{
+  const hadlestudentcourse = async (Id, classname, coursename, classcode, email) => {
     navigation.navigate('ClassStudent')
     try {
 
@@ -83,8 +68,8 @@ export default function Home({route }) {
         id: Id,
         class: classname,
         course: coursename,
-        classCode:classcode,
-        email:email
+        classCode: classcode,
+        email: email
       })
     } catch (error) {
 
@@ -96,7 +81,7 @@ export default function Home({route }) {
         console.log('Todo removed successfully');
       })
       .catch(error => console.error('Error removing todo: ', error));
-       
+
   };
   const handleRemovestudentclass = (docId) => {
     firebase.firestore().collection('studentclasscode').doc(docId).delete()
@@ -104,7 +89,7 @@ export default function Home({route }) {
         console.log('Todo removed successfully');
       })
       .catch(error => console.error('Error removing todo: ', error));
-       
+
   };
   return (
     <>
@@ -114,11 +99,11 @@ export default function Home({route }) {
         <View style={styles.classcontainer}>
 
           {todos && todos.map((item, index) => (
-            <TouchableOpacity style={styles.class} key={item.id} onPress={() => handlecourse(item.id, item.class, item.course,item.classCode)}>
- <Button
-        title='Remove '
-        onPress={() => handleRemoveTodo(item.id)}
-      />
+            <TouchableOpacity style={styles.class} key={item.id} onPress={() => handlecourse(item.id, item.class, item.course, item.classCode)}>
+              <Button
+                title='Remove '
+                onPress={() => handleRemoveTodo(item.id)}
+              />
               <Text style={styles.classtext}>admin</Text>
               <Text style={styles.classtext} key={index}>{item.course} {item.classCode}</Text>
             </TouchableOpacity>
@@ -133,7 +118,8 @@ export default function Home({route }) {
         onPress={() => handleRemovestudentclass(item.id)}
       />
             <Text style={styles.classtext}>student</Text>
-            <Text style={styles.classtext} >{item.classCode}</Text>
+            <Text style={styles.classtext} >{item.course} ---- {item.class}</Text>
+
           </TouchableOpacity>
           ))}
         </View>

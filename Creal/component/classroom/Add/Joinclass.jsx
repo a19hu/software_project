@@ -11,20 +11,22 @@ export default function Joinclass({ route }) {
     const handleadd=async()=>{
       // navigation.navigate('Coursedetails')
       const data = await joinClass(courseid);
+      console.log('data'.data)
       setcourseid('')
 
     }
-    const joinClass = async (classCode) => {
+    const joinClass = async (classCodes) => {
+      // console.log(classCodes)
       const currentUser = firebase.auth().currentUser;
-      if(currentUser){
-        firebase.firestore().collection('studentclasscode').add({
-      classcode:courseid,
-      userId: currentUser.uid,
-      email:currentUser.email
-        })
-      }
+      // if(currentUser){
+      //   firebase.firestore().collection('studentclasscode').add({
+      // classcode:courseid,
+      // userId: currentUser.uid,
+      // email:currentUser.email
+      //   })
+      // }
       try {
-        const querySnapshot = await firebase.firestore().collection('ClassCreateByAdmin').where('classCode', '==', classCode).get();
+        const querySnapshot = await firebase.firestore().collection('ClassCreateByAdmin').where('classCode', '==', classCodes).get();
         if (querySnapshot.empty) {
           throw new Error('Class not found with this code');
         }

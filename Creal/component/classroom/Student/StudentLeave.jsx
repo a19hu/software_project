@@ -1,104 +1,90 @@
-import { View, Text,Button,Image,Alert } from 'react-native'
-import React,{useState} from 'react'
-import * as ImagePicker from 'expo-image-picker';
-import {firebase,firebaseConfig} from '../../../firebase'
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
+import { View, Text,Button,Image,Alert, TouchableOpacity, Linking } from 'react-native'
+import React,{useState,useEffect} from 'react'
+import { storage } from '../../../firebase';
+import { ref, listAll, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import * as DocumentPicker from 'expo-document-picker';
-import Studentcamera from './Studentcamera'
 
 export default function StudentLeave() {
-    const [image, setImage] = useState(null);
-    const [uploading,setUploading]= useState(false)
-  // const [uploading, setUploading] = useState(false);
-
-    const pickDocument = async () => {
-      try {
-        const result = await DocumentPicker.getDocumentAsync({ type: 'application/pdf' });
-        console.log('result',result)
-        console.log('name',result.assets[0].name)
-  
-        if (!result.canceled) {
-          setUploading(true);
-          const response = await fetch(result.assets[0].uri);
-          const blob = await response.blob();
-          const filename = result.assets[0].name;
-          const storageRef = firebase.storage().ref().child(`pdfs/${filename}`);
-          await storageRef.put(blob);
-          setUploading(false);
-          console.log('PDF uploaded to Firebase Storage');
-        }
-      } catch (error) {
-        console.error('Error picking document:', error);
-      }
-    };
-    const selectImage = async () => {
-        try {
-          let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-          });
+    const [fileName, setFileName] = useState('');
+    const [blobFile, setBlobFile] = useState(null);
+    const [uploading, setUploading] = useState(false);
+    const [files, setFiles] = useState([]);
+    useEffect(() => {
+      // const fetchFiles = async (userId) => {
+      //   try {
+      //     const storagePath = `users/${userId}/uploads`;
     
-          if (!result.canceled) {
-            setImage(result.assets[0].uri);
-          }
+      const fetchFiles = async () => {
+        try {
+          const storageRef = ref(storage, 'myDocs'); 
+          const listResult = await listAll(storageRef);
+          const urls = await Promise.all(listResult.items.map(item => getDownloadURL(item)));
+          setFiles(urls);
         } catch (error) {
-          console.error('Error selecting image:', error);
-          Alert.alert('Error', 'Failed to select image. Please try again.');
+          console.error('Error fetching files:', error);
         }
       };
-      const uploadImage = async () => {
-        console.log('done1')
-        const blob = await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.onload = function() {
-            resolve(xhr.response);
-          };
-          xhr.onerror = function() {
-            reject(new TypeError('Network request failed'));
-          };
-          xhr.responseType = 'blob';
-          xhr.open('GET', image, true);
-          xhr.send(null);
-        })
-        console.log('blob',blob)
-        const ref = firebase.storage().ref().child(`Image8.jpg`)
-        console.log('ref',ref)
-        const snapshot = ref.put(blob)
-        snapshot.on(firebase.storage.TaskEvent.STATE_CHANGED,
-          ()=>{
-            setUploading(true)
-          },
-          (error) => {
-            setUploading(false)
-            console.log(error)
-            blob.close()
-            return 
-          },
-          () => {
-            snapshot.snapshot.ref.getDownloadURL().then((url) => {
-              setUploading(false)
-              console.log("Download URL: ", url)
-              setImage(url)
-              blob.close()
-              return url
-            })
-          }
-          )
+  
+      fetchFiles();
+    }, []);
+    const pickDocument = async () => {
+      try {
+            let result = await DocumentPicker.getDocumentAsync({});
+            // console.log(result)
+            if (result !=null ) {
+                const response = await fetch(result.assets[0].uri);
+                const blob = await response.blob();
+                setFileName(result.assets[0].name);
+                setBlobFile(blob);
+                console.log('sucess full')
+            }
+        } catch (error) {
+            console.log('Error picking document:', error);
+        }
+  
+    };
+    const uploadFile = async () => {
+      try {
+          if (!blobFile) return;
+
+          setUploading(true);
+          const storageRef = ref(storage, `myDocs/${fileName}`);
+          const uploadTask = uploadBytesResumable(storageRef, blobFile);
+
+          uploadTask.on(
+              "state_changed",
+              null,
+              (error) => {
+                  console.error("Error uploading file:", error);
+                  setUploading(false);
+              },
+              () => {
+                  getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                      console.log("File available at", downloadURL);
+                      setUploading(false);
+                  });
+              }
+          );
+      } catch (error) {
+          console.error("Error uploading file:", error);
+          setUploading(false);
       }
+  };
+  const openFile = (url) => {
+    Linking.openURL(url);
+  };
+
+  
   return (
     <View>
-      <Text>Studentcamera</Text>
-      <Button title="Select Image" onPress={selectImage} />
-      {image && <Image source={{ uri: image }} style={{ width: 100, height: 100, marginBottom: 20 }} />}
-      <Button title="Upload Image" onPress={uploadImage} />
+      <Image source={{ uri: files[1] }} style={{ width: 400, height: 500, marginBottom: 20 }} />
+      <Image source={{ uri: files[2] }} style={{ width: 100, height: 100, marginBottom: 20 }} />
       <Button title="Pick PDF" onPress={pickDocument} disabled={uploading} />
-
-      {/* <Studentcamera/> */}
-
+      <Button title="Upload Document" onPress={uploadFile} 
+      // disabled={!fileName || uploading}
+       />
+           <Button title="show Document" onPress={() => openFile(files[0])} />
+          
     </View>
   )
 }

@@ -12,6 +12,7 @@ import Joinclass from '../classroom/Add/Joinclass';
 import ClassStudent from '../Navbar/ClassStudent';
 import Attendencephoto from '../classroom/Student/Attendencephoto';
 import Coursedetails from '../classroom/Course/Coursedetails';
+import Studentcamera from '../classroom/Student/Studentcamera';
 const Stack = createStackNavigator();
 
 export default function UserStack() {
@@ -55,6 +56,7 @@ export default function UserStack() {
         <Stack.Screen name="ClassStudent" component={ClassStudent} 
         initialParams={{studentdetails:studentdetails }}
         />
+        <Stack.Screen name="studentcamera" component={Studentcamera} /> 
 
       </Stack.Navigator>
   );
