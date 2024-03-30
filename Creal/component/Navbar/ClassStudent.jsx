@@ -1,23 +1,48 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Email from '../classroom/Student/Email'
 import StudentAttendence from '../classroom/Student/StudentAttendence';
 import Studentcoursedet from '../classroom/Student/Studentcoursedet';
 import StudentLeave from '../classroom/Student/StudentLeave';
 const Tab = createBottomTabNavigator();
-
+import { BlurView } from 'expo-blur';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 export default function ClassStudent({ route }) {
   const {studentdetails } = route.params;
-
   return (
-    <Tab.Navigator
+    <Tab.Navigator 
+    screenOptions={{
+    tabBarInactiveTintColor:"#ABB2EF",
+    tabBarActiveTintColor:"white",
+    // tabActiveTint
+      tabBarStyle: { position: 'absolute' },
+      tabBarBackground: () => (
+        <BlurView tint="light" intensity={100}  />
+      ),
+    }}
+    tabBarStyle={{ backgroundColor: 'red' }}
+    initialRouteName="Studentcoursedet"
     >
-    <Tab.Screen name="Studentcoursedet" component={Studentcoursedet} options={{headerShown:false}}  
-    initialParams={{studentdetails:studentdetails}}
+     
+    <Tab.Screen name="Studentcoursedet" component={Studentcoursedet} 
+    options={{
+      headerShown: false,
+      tabBarIcon: ({ focused, color, size }) => (
+<MaterialCommunityIcons name="card-account-details" size={24} color={color} />)}} 
+    initialParams={{studentdetails:studentdetails}}/>
+     <Tab.Screen name="StudentAttendence" component={StudentAttendence} 
+    options={{
+      headerShown: false,
+      tabBarIcon: ({ focused, color, size }) => (
+<MaterialIcons name="photo-library" size={24} color={color} />     ),
+    }} 
     />
-    <Tab.Screen name="StudentAttendence" component={StudentAttendence} options={{headerShown:false}} />
-    <Tab.Screen name="Email" component={Email} options={{headerShown:false}} />
-    <Tab.Screen name="StudentLeave" component={StudentLeave} options={{headerShown:false}} />
+    <Tab.Screen name="StudentLeave" component={StudentLeave} 
+    options={{
+      headerShown: false,
+      tabBarIcon: ({color}) => (<AntDesign name="pdffile1" size={24} color={color} /> )}} 
+    />
 
 
   </Tab.Navigator>

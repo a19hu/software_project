@@ -1,13 +1,8 @@
-// firebase.js
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore'
-import 'firebase/compat/auth'
-import 'firebase/compat/firestore'
-import {getStorage} from 'firebase/storage'
+import { getFirestore } from "firebase/firestore";
 
-const firebaseConfig = {
+export const firebaseConfig = {
     apiKey: "AIzaSyC9_Db73dw80mMWMAx5EbI3qAVQs7-H7_A",
     authDomain: "instgram-demo-95594-41151.firebaseapp.com",
     projectId: "instgram-demo-95594",
@@ -18,11 +13,9 @@ const firebaseConfig = {
   
 };
 
-if (!firebase.apps.length) {
-  initializeApp(firebaseConfig);
-}
+
+
 const app = initializeApp(firebaseConfig);
-export {firebase}
-export const auth = getAuth();
-export {firebaseConfig}
-export const storage = getStorage(app)
+const auth = getAuth(app);
+const db = getFirestore(app);
+export {db}

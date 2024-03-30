@@ -1,16 +1,13 @@
 import { View, Text,TextInput,Button } from 'react-native'
 import React, { useState, useEffect } from 'react';
-import {firebase,firebaseConfig} from '../../../firebase'
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
+import {app,firebase} from '../../../firebase'
 export default function Createclass() {
     const [value, setValue] = useState({
       class: '',
         course: ''
       })
       const generateClassCode=()=>{
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+-=[]{}|;:,.<>?';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let classCode = '';
         const codeLength = 6;
        for (let i = 0; i < codeLength; i++) {

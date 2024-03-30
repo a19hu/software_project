@@ -1,5 +1,5 @@
+import { View, Text } from 'react-native'
 import React,{useState} from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from '../Screen/Home/Home';
 import Profile from '../Screen/profile/Profile';
@@ -13,29 +13,37 @@ import ClassStudent from '../Navbar/ClassStudent';
 import Attendencephoto from '../classroom/Student/Attendencephoto';
 import Coursedetails from '../classroom/Course/Coursedetails';
 import Studentcamera from '../classroom/Student/Studentcamera';
+import JoinTa from '../classroom/TA/JoinTa';
+import HomeTA from '../classroom/TA/HomeTA';
 const Stack = createStackNavigator();
 
 export default function UserStack() {
   const [details,setdetails]=useState({
     id:'',
     class:'',
-    course:''
+    course:'',
+    userId:''
+
   })
   const [studentdetails,setstuydentdetails]=useState({
     id:'',
     class:'',
     course:'',
     classCode:'',
-    email:''
+    email:'',
   })
-  const [classid,setclassid]= useState('hii')
-  // console.log('classid',classid)
+  const [classid,setclassid]= useState('')
 
   return (
       <Stack.Navigator screenOptions={{headerShown: false }}>
-        <Stack.Screen name="home" component={Home}   
+        <Stack.Screen name="mainhome" component={Home}   
         initialParams={{ setdetails: setdetails,classid:classid,setstuydentdetails:setstuydentdetails}} 
         />
+
+        <Stack.Screen name="HomeTA" component={HomeTA } 
+        // initialParams={{setdetails:setdetails}}
+        />
+       
         <Stack.Screen name="Todo" component={Todo } />
         <Stack.Screen name="Coursedetails" component={Coursedetails } />
         <Stack.Screen name="Attendencephoto" component={Attendencephoto } />
@@ -44,6 +52,10 @@ export default function UserStack() {
         />
         <Stack.Screen name="joinclass" component={Joinclass } 
         initialParams={{setclassid:setclassid}} 
+        
+        />
+        <Stack.Screen name="joinTa" component={JoinTa } 
+        // initialParams={{setclassid:setclassid}} 
         
         />
         <Stack.Screen name="Profile" component={Profile} /> 
@@ -61,3 +73,4 @@ export default function UserStack() {
       </Stack.Navigator>
   );
 }
+
