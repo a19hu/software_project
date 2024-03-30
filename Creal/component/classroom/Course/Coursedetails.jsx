@@ -4,15 +4,13 @@ import { db } from '../../../firebase'
 import * as Clipboard from 'expo-clipboard';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 const auth = getAuth();
-import firebase from 'firebase/app';
 import Background from '../../../Image/back.png'
 import { collection, doc, onSnapshot, query, where, getDocs, getDocFromCache, setDoc, addDoc, push,ref  } from "firebase/firestore";
 
 export default function Coursedetails({ route }) {
   const [textes, settext] = useState()
   const [note, setnote] = useState([])
-  const { details } = route.params;
-  const id = details.id   //3Vnel4pJwbWMYJ4tNDbn   classcreate id
+  const { Id, classname, coursename, classcode, userId } = route.params;
   const copyToClipboard = async () => {
     await Clipboard.setStringAsync(details.classCode);
   };
@@ -26,7 +24,7 @@ export default function Coursedetails({ route }) {
         const uid = user.uid;
         const email = user.email;
         try {
-          const q = collection(db, 'ClassCreateByAdmin', id, 'massages');
+          const q = collection(db, 'ClassCreateByAdmin', Id, 'massages');
           const snapshot = await getDocs(q);
           const todosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
           setnote(todosData);
@@ -89,8 +87,8 @@ export default function Coursedetails({ route }) {
             style={styles.backgroundinfo}
             >
 
-        <Text style={styles.classname} >{details.class} </Text>
-        <Text style={styles.classtext} > {details.course}</Text>
+        <Text style={styles.classname} >{classname} </Text>
+        <Text style={styles.classtext} > {coursename}</Text>
                <View style={styles.buttoncopy}>
 
         <TouchableOpacity onPress={copyToClipboard} style={styles.button}>

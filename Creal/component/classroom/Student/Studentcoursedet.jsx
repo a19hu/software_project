@@ -5,15 +5,12 @@ import React,{useState,useEffect} from 'react'
 import Background from '../../../Image/back.png'
 
 export default function Studentcoursedet({route,navigation}) {
-  const { studentdetails } = route.params;
+  const { Id, classname, coursename, classcode, email } = route.params;
   const [textes,settext]= useState('')
   const [cameradisplay,setcameradisplay]=useState(true)
-  const [timeout,settimeout]=useState()
+  const [timeout,settimeout]=useState('hii')
   const [notestudent,setnotestudent] = useState([])
   const [noteadmin,setnoteadmin] = useState([])
-  const id =studentdetails.id  // FheZb6pfgyyYunOwiweG    ye createclass ke under student ka id
-  const adminemail= studentdetails.email
-  const classcodeid =studentdetails.classCode
   const durationInMinutes=1
 //  useEffect(()=>{
 //   fetchmassage(id)
@@ -46,21 +43,21 @@ export default function Studentcoursedet({route,navigation}) {
  const handleChangeText = (inputText) => {
   settext(inputText);
 };
-  //  const fetchmassage=(Id)=>{
-  //   const currentUser = firebase.auth().currentUser;
-  //   const uid= currentUser.email
-  //   try{
-  //     firebase.firestore().collection('ClassCreateByAdmin').doc(Id).collection('massages').where('email', '==', uid).onSnapshot(snapshot => {
-  //       const todosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  //       // console.log('student',todosData)
-  //       setnotestudent(todosData)
-  //     });
-  //   }catch(err){
-  // console.log(err)
+   const fetchmassage=(Id)=>{
+    const currentUser = firebase.auth().currentUser;
+    const uid= currentUser.email
+    try{
+      firebase.firestore().collection('ClassCreateByAdmin').doc(Id).collection('massages').where('email', '==', uid).onSnapshot(snapshot => {
+        const todosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        // console.log('student',todosData)
+        setnotestudent(todosData)
+      });
+    }catch(err){
+  console.log(err)
    
-  //   }
+    }
       
-  //  }
+   }
   //  const fetchmassageAdmin=(id)=>{
   //   try{
   //     firebase.firestore().collection('ClassCreateByAdmin').doc(id).collection('massages').where('email', '==', adminemail)
@@ -127,13 +124,13 @@ export default function Studentcoursedet({route,navigation}) {
             style={styles.backgroundinfo}
             >
 
-        <Text style={styles.classname} >{studentdetails.class} </Text>
-        <Text style={styles.classtext} > {studentdetails.course}</Text>
+        <Text style={styles.classname} >{classname} </Text>
+        <Text style={styles.classtext} > {coursename}</Text>
       </ImageBackground>
         </View>
       <View style={styles.camera}>
         <Text style={styles.input}>Timer : {timeout}</Text>
-   <TouchableOpacity  style={styles.button} onPress={()=> navigation.navigate('studentcamera')}>
+   <TouchableOpacity  style={styles.button} onPress={()=> navigation.navigate('studentcamera',timeout)}>
                 <Text style={styles.copy}>
                 Camera open
                 </Text>

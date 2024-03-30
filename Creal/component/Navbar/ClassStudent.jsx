@@ -9,13 +9,12 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 export default function ClassStudent({ route }) {
-  const {studentdetails } = route.params;
+  const {Id, classname, coursename, classcode, email } = route.params;
   return (
     <Tab.Navigator 
     screenOptions={{
     tabBarInactiveTintColor:"#ABB2EF",
     tabBarActiveTintColor:"white",
-    // tabActiveTint
       tabBarStyle: { position: 'absolute' },
       tabBarBackground: () => (
         <BlurView tint="light" intensity={100}  />
@@ -30,7 +29,8 @@ export default function ClassStudent({ route }) {
       headerShown: false,
       tabBarIcon: ({ focused, color, size }) => (
 <MaterialCommunityIcons name="card-account-details" size={24} color={color} />)}} 
-    initialParams={{studentdetails:studentdetails}}/>
+    initialParams={{Id, classname, coursename, classcode, email}}
+    />
      <Tab.Screen name="StudentAttendence" component={StudentAttendence} 
     options={{
       headerShown: false,

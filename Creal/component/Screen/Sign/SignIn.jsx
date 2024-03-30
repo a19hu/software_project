@@ -24,9 +24,10 @@ export default function SignIn({ navigation }) {
           ToastAndroid.show('please fill the input', ToastAndroid.SHORT);
           return;
         }
-    
+        
         try {
-            await signInWithEmailAndPassword(auth, value.email, value.password);
+          await signInWithEmailAndPassword(auth, value.email, value.password);
+          console.log('press1')
             ToastAndroid.show('Login successfully!', ToastAndroid.SHORT);
           } catch (error) {
             setValue({

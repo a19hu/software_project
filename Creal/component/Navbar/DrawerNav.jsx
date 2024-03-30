@@ -6,9 +6,7 @@ import Notification from '../Screen/notification/Notification';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons'; 
 import defaultimage from '../../Image/default.png'
-import logo from '../../Image/logo.png'
 import Profile from '../Screen/profile/Profile'
-import Play from '../Screen/play/Play';
 import UserStack from '../StackNavbar/UserStack';
 import HomeTA from '../classroom/TA/HomeTA.jsx';
 import { FontAwesome5 } from '@expo/vector-icons';

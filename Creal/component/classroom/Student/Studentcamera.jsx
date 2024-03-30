@@ -4,8 +4,8 @@ import { Camera } from 'expo-camera';
 import { ref, listAll, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { storage } from '../../../firebase';
 
-export default function Studentcamera() {
-
+export default function Studentcamera({route}) {
+   const {timeout} = route.params
   const [hasPermission, setHasPermission] = useState(null);
   const [blobFile, setBlobFile] = useState(null);
   const [previewVisible, setPreviewVisible] = useState(false);
@@ -16,23 +16,23 @@ export default function Studentcamera() {
 
   useEffect(() => {
    
-    const fetchFiles = async () => {
-      try {
-        const storageRef = ref(storage, 'camera1'); 
-        const listResult = await listAll(storageRef);
-        const imagname=await Promise.all(listResult.items.map(item => item.name));
-        const urls = await Promise.all(listResult.items.map(item => getDownloadURL(item)));
-        const filesData = imagname.map((name, index) => ({
-          name: name,
-          url: urls[index]
-        }));
-        setFiles(filesData);
-      } catch (error) {
-        console.error('Error fetching files:', error);
-      }
-    };
+    // const fetchFiles = async () => {
+    //   try {
+    //     const storageRef = ref(storage, 'camera1'); 
+    //     const listResult = await listAll(storageRef);
+    //     const imagname=await Promise.all(listResult.items.map(item => item.name));
+    //     const urls = await Promise.all(listResult.items.map(item => getDownloadURL(item)));
+    //     const filesData = imagname.map((name, index) => ({
+    //       name: name,
+    //       url: urls[index]
+    //     }));
+    //     setFiles(filesData);
+    //   } catch (error) {
+    //     console.error('Error fetching files:', error);
+    //   }
+    // };
 
-    fetchFiles();
+    // fetchFiles();
   }, []);
 
 
@@ -61,6 +61,11 @@ export default function Studentcamera() {
       setPreviewVisible(true);
       await uploadImageAsync(result.uri);
       console.log('camera1 sucess full')
+      setType(
+        type === Camera.Constants.Type.back
+          ? Camera.Constants.Type.front
+          : Camera.Constants.Type.back
+      );
   }
   };
   const currentDate = new Date();
@@ -74,11 +79,9 @@ const formattedMonth = currentMonth < 10 ? `0${currentMonth}` : `${currentMonth}
  const date = currentYear + "-"+formattedMonth + "-" +currentDay 
  const time = currentHour + ":" + currentMinute
 const datetime= time +""+'|'+date
-console.log(datetime)
   async function uploadImageAsync(uri) {
     try {
       if (!blobFile) return;
-      // console.log(filename)
       const fileName=datetime
       const storageRef = ref(storage, `camera1/${fileName}`);
       const uploadTask = uploadBytesResumable(storageRef, blobFile);
@@ -93,6 +96,7 @@ console.log(datetime)
           () => {
               getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                   console.log("File available at", downloadURL);
+                  
               });
           }
       );
@@ -111,7 +115,7 @@ console.log(datetime)
         }}
       >
         <View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => {
               setType(
                 type === Camera.Constants.Type.back
@@ -121,7 +125,7 @@ console.log(datetime)
             }}
           >
             <Text style={{ fontSize: 50, marginBottom: 10, color: "black" }}>Flip</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <View>
             <View>
               <TouchableOpacity

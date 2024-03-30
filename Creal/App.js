@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View,Image ,ImageBackground} from 'react-native';
 import React, { useState, useEffect } from 'react';
-import Logo from './Image/logo.png'
+import Logo from './Image/logoadd.png'
 import './firebase'
 import { ThemeProvider } from 'react-native-elements';
 import RootNavigation from './component/utils/RootNavigation';
@@ -12,7 +12,7 @@ export default function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLogo(false);
-    }, 1000);
+    }, 1500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -24,7 +24,7 @@ export default function App() {
     <View style={styles.container}>
       {showLogo ? (
         <View style={styles.logo}>
-          <Image source={Logo} style={{ width: 150, height: 150 }} />
+          <Image source={Logo} style={{ width: 160, height: 122 }} />
         </View>
       ) : (<ThemeProvider>
         <RootNavigation />
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   },
   logo:{
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#2A3B7F',
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -15,7 +15,6 @@ export default function Home({ route }) {
   const navigation = useNavigation();
   const [todos, setTodos] = useState([]);
   const [classjoin, setclassjoin] = useState([])
-  const { setdetails, setstuydentdetails } = route.params;
   useEffect(() => {
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -50,31 +49,14 @@ export default function Home({ route }) {
   const [modalVisible, setModalVisible] = useState(false);
   const handlecourse = async (Id, classname, coursename, classcode, userId) => {
     try {
-
-      await setdetails({
-        id: Id,
-        class: classname,
-        course: coursename,
-        classCode: classcode,
-        userId: userId
-
-      })
-      navigation.navigate('Bottomstudent')
+      navigation.navigate('Bottomstudent',{Id, classname, coursename, classcode, userId})
     } catch (error) {
 
     }
   }
   const hadlestudentcourse = (Id, classname, coursename, classcode, email) => {
     try {
-
-      setstuydentdetails({
-        id: Id,
-        class: classname,
-        course: coursename,
-        classCode: classcode,
-        email: email,
-      })
-      navigation.navigate('ClassStudent')
+      navigation.navigate('ClassStudent',{Id, classname, coursename, classcode, email})
     } catch (error) {
 
     }
@@ -105,11 +87,12 @@ export default function Home({ route }) {
             resizeMode='repeat'
         >
       <ScrollView>
+          <Text style={styles.notics}>This is your class </Text>
         <View style={styles.classcontainer}>
           {todos && todos.map((item, index) => (
              <View
              style={styles.class}
-             
+             key={index}
              >
                 <ImageBackground
               source={Background}
@@ -119,7 +102,7 @@ export default function Home({ route }) {
             <TouchableOpacity  key={item.id} onPress={() => handlecourse(item.id, item.class, item.course, item.classCode, item.userId)}>
               <View style={styles.rowContainer}>
 
-                <Text style={styles.classtext} key={index}>{item.class}</Text>
+                <Text style={styles.classtext} key={index}>{item.class.substring(0, 8)+'..'}</Text>
                 <Feather name="more-vertical" size={24} color="white"
                   style={styles.details}
                   onPress={() => handleRemoveTodo(item.id)}
@@ -133,10 +116,13 @@ export default function Home({ route }) {
               </View>
           ))}
         </View>
+        <Text style={styles.notics}>This is your classroom</Text>
+
         <View style={styles.classcontainer} >
           {classjoin && classjoin.map((item, index) => (
            <View
            style={styles.class}
+           key={index}
            
            >
               <ImageBackground
@@ -147,7 +133,7 @@ export default function Home({ route }) {
             <TouchableOpacity  key={index} onPress={() => hadlestudentcourse(item.id, item.class, item.course, item.classCode, item.email)}>
               <View style={styles.rowContainer}>
 
-                <Text style={styles.classtext} key={index}>{item.class}</Text>
+                <Text style={styles.classtext} key={index}>{item.class.substring(0, 8)+'..'}</Text>
                 <Feather name="more-vertical" size={24} color="white"
                   style={styles.details}
                   onPress={() => handleRemoveTodo(item.id)}
@@ -230,5 +216,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
+  notics:{
+    color:'#ABB2EF',
+    fontSize:25,
+    fontWeight:'900',
+    marginLeft:20
+  }
 
 });

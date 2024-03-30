@@ -9,7 +9,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
 export default function Bottomstudent({ route }) {
-  const {details } = route.params;
+  const {Id, classname, coursename, classcode, userId } = route.params;
   return (
     <Tab.Navigator 
     screenOptions={{
@@ -29,7 +29,7 @@ export default function Bottomstudent({ route }) {
       headerShown: false,
       tabBarIcon: ({ focused, color, size }) => (
 <MaterialCommunityIcons name="card-account-details" size={24} color={color} />)}} 
-    initialParams={{details:details}} />
+    initialParams={{Id, classname, coursename, classcode, userId}} />
     <Tab.Screen name="Attendence" component={Attendence} 
     options={{
       headerShown: false,
@@ -43,7 +43,8 @@ export default function Bottomstudent({ route }) {
       tabBarIcon: ({color}) => (<FontAwesome name="list-alt" size={24} color={color} /> )}} 
    
     
-    initialParams={{details:details}}/>
+    initialParams={{Id, classname, coursename, classcode, userId}}
+    />
   </Tab.Navigator>
   )
 }

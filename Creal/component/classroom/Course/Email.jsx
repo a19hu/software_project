@@ -2,14 +2,15 @@ import { View, Text,Button,TextInput } from 'react-native'
 import React,{useState,useEffect} from 'react'
 import * as MailComposer from 'expo-mail-composer';
 import * as Print from 'expo-print';
-import logo from '../../../Image/login.png'
+import { useRoute } from '@react-navigation/native'; 
 export default function Email() {
+  const route = useRoute(); 
+  const { Id,details } = route.params;
   const [available,setavailable]= useState(false)
   const [recipients,setrecipients]=useState([])
-  const [subject,setsubject]= useState(undefined)
-  const [body,setbody]= useState(undefined)
   const [email,setemail]= useState(undefined)
-
+  const subject ='hii'
+  const body = Id
   useEffect(()=>{
    async function checkavailable(){
     const available = await MailComposer.isAvailableAsync()
@@ -30,9 +31,7 @@ const html=`
     <img
       src="https://d30j33t1r58ioz.cloudfront.net/static/guides/sdk.png"
       style="width: 90vw;" />
-      <img
-      src="${logo}"
-      style="width: 90vw;" />
+    
   </body>
 </html>
 `
@@ -67,8 +66,6 @@ html
   return (
     <View>
       <Text>Email</Text>
-      <TextInput placeholder='subject' value={subject} onChangeText={setsubject}/>
-      <TextInput placeholder='body' value={body} onChangeText={setbody}/>
       <TextInput placeholder='email' value={email} onChangeText={setemail}/>
    <Button title='add' onPress={addrecipients}/>
    {showRecipients()}
