@@ -1,16 +1,36 @@
 import { View, Text, TextInput, Button, TouchableOpacity, ImageBackground, StyleSheet, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react';
 import Background from '../../../Image/back.png'
-
-
+import { db } from '../../../firebase'
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+const auth = getAuth();
+import firebase from 'firebase/app';
+import { collection, query, where, getDocs,doc } from "firebase/firestore";
 export default function Studentlist({ route,navigation }) {
   const { Id, classname, coursename, classcode, userId } = route.params;
-  const [value, setValue] = useState()
   const [todos, setTodos] = useState([]);
+  const [classjoin, setclassjoin] = useState([])
+  useEffect(() => {
+    const datafetching =async()=>{
+      const user = auth.currentUser;
+      try {
+        const q = await getDocs(collection(db, "ClassCreateByAdmin",Id,'students'))
+        const todosData = q.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setTodos(todosData);
+        const querySnapshot = await getDocs(collection(db, "ClassCreateByAdmin",Id,'Ta'))
+        const studentSnapshot = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setclassjoin(studentSnapshot);
+      } catch (error) {
+      }
 
+    
+     }
+     datafetching()
+    
+  }, []);
 
-  const handleemail = () => {
-    navigation.navigate('email', {Id, classname, coursename, classcode, userId})
+  const handleemail = (id) => {
+    navigation.navigate('email', {id,Id, classname, coursename, classcode, userId})
   }
 
   return (
@@ -30,7 +50,7 @@ export default function Studentlist({ route,navigation }) {
             >
 
               <Text style={styles.classname} >Teacher </Text>
-              <TouchableOpacity style={styles.button} onPress={()=>handleemail()}>
+              <TouchableOpacity style={styles.button} onPress={()=>handleemail(Id)}>
                 <Text style={styles.copy}>
                   Add
                 </Text>
@@ -43,7 +63,11 @@ export default function Studentlist({ route,navigation }) {
 
         </View>
         <View>
-
+  {todos.map((todo) => (
+    <View key={todo.id}>
+      <Text>{todo.name}</Text>
+    </View>
+  ))}
         </View>
 
         <View style={styles.container}>
@@ -54,7 +78,7 @@ export default function Studentlist({ route,navigation }) {
             >
 
               <Text style={styles.classname} >Student </Text>
-              <TouchableOpacity style={styles.button} onPress={()=>handleemail()}>
+              <TouchableOpacity style={styles.button} onPress={()=>handleemail(classcode)}>
                 <Text style={styles.copy}>
                   Add
                 </Text>
@@ -67,7 +91,11 @@ export default function Studentlist({ route,navigation }) {
 
         </View>
         <View>
-          
+        {classjoin.map((todo) => (
+    <View key={todo.id}>
+      <Text>{todo.name}</Text>
+    </View>
+  ))}
         </View>
 
 

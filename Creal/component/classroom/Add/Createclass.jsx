@@ -1,7 +1,11 @@
 import { View, Text,TextInput,Button } from 'react-native'
 import React, { useState, useEffect } from 'react';
-import {app,firebase} from '../../../firebase'
-export default function Createclass() {
+import { db } from '../../../firebase'
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+const auth = getAuth();
+import firebase from 'firebase/app';
+import { collection, addDoc, query, where, getDocs,doc } from "firebase/firestore";
+export default function Createclass({navigation}) {
     const [value, setValue] = useState({
       class: '',
         course: ''
@@ -17,29 +21,24 @@ export default function Createclass() {
 
        return classCode;
       }
-    const handleAddTodo = () => {
-        const currentUser = firebase.auth().currentUser;
-        if (currentUser) {
-          firebase.firestore().collection('ClassCreateByAdmin').add({
+    const handleAddTodo = async() => {
+      
+      const user = auth.currentUser;
+        
+          await addDoc(collection(db, "ClassCreateByAdmin"), {
             ...value,
-            userId: currentUser.uid,
-            email:currentUser.email,
+            userId: user.uid,
+            email:user.email,
             classCode: generateClassCode(),
           })
-            .then((docRef) => {
-              console.log('Todo added successfully');
-              // firebase.firestore().collection('classcode').add({
-              //   classcode:docRef,
-              //   adminname:currentUser.displayName,
-              //   email:currentUser.email,
-              //   ...value
-              // })
-              setValue({ class: '', course: '' });
-            })
-            .catch(error => console.error('Error adding todo: ', error));
-        }
-
-      };
+           
+              .then((docRef) => {
+                setValue({ class: '', course: '' });
+                console.log('Todo added successfully');
+                navigation.navigate('mainhome')
+              })
+              .catch(error => console.error('Error adding todo: ', error));
+    };
     
   return (
     <View>

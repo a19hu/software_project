@@ -1,33 +1,38 @@
 import { View, SafeAreaView, Text, Button, StyleSheet, TouchableOpacity, ImageBackground,ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { firebase } from '../../../firebase'
+import { db } from '../../../firebase'
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+const auth = getAuth();
+import firebase from 'firebase/app';
+import { collection, query, where, getDocs,doc } from "firebase/firestore";
 import AddTa from './AddTa';
 import Background from '../../../Image/back.png'
 
 export default function HomeTA({ route }) {
     // const { setdetails} = route.params;
   const [classjoin, setclassjoin] = useState([])
-  console.log('class',classjoin)
+  console.log(classjoin)
+  const classJoinData = [];
+
   useEffect(() => {
     const fetchStudentClasses = async () => {
-      const currentUser = firebase.auth().currentUser;
+      const user = auth.currentUser;
       try{
-          if (currentUser) {
-      const email = currentUser.email;
-    const classJoinData = [];
-    const querySnapshot = await firebase.firestore().collection('ClassCreateByAdmin').get();
-
-    const classQueries = querySnapshot.docs.map(async classdoc => {
-      const studentSnapshot = await firebase.firestore().collection('ClassCreateByAdmin').doc(classdoc.id).collection('TA').where('name', '==', email).get();
-      const todosData = studentSnapshot.docs.map(doc => ({  id: classdoc.id,...classdoc.data() }));
-      classJoinData.push(...todosData);
-    });
-
-    await Promise.all(classQueries);
-    setclassjoin(classJoinData);
-  }
+        const querySnapshot = await getDocs(collection(db, 'ClassCreateByAdmin'));
+        const classQueries = querySnapshot.docs.map(async (classdoc) => {
+          const studentSnapshot = await getDocs(query(collection(classdoc.ref, 'Ta'), where('name', '==', user.email)));
+          const todosData = studentSnapshot.docs.map((doc) => ({
+            id: classdoc.id,
+            ...classdoc.data(),
+          }));
+          classJoinData.push(...todosData);
+        });
+        await Promise.all(classQueries);
+        setclassjoin(classJoinData);
+  
       }catch(error){
       }
     };
@@ -37,17 +42,11 @@ export default function HomeTA({ route }) {
   }, []);
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
-  const hadlestudentcourse =  (Id, classname, coursename, classcode, email) => {
+  const hadlestudentcourse =  (Id, classname, coursename, classcode, userId) => {
     try {
-        navigation.navigate('ClassStudent')
+      navigation.navigate('Bottomstudent',{Id, classname, coursename, classcode, userId})
+
       
-       setstuydentdetails({
-        id: Id,
-        class: classname,
-        course: coursename,
-        classCode: classcode,
-        email: email
-      })
     } catch (error) {
 
     }
@@ -71,21 +70,37 @@ export default function HomeTA({ route }) {
             style={styles.background}
             resizeMode='repeat'
         >
-      <ScrollView style={styles.container}>
-        <View style={styles.classcontainer} >
-          {classjoin && classjoin.map((item, index) => (
+      <ScrollView >
+      <View style={styles.classcontainer} >
+  {classjoin && classjoin.map((item, index) => (
+   <View
+   style={styles.class}
+   key={index}
+   
+   >
+      <ImageBackground
+    source={Background}
+    style={styles.classimage}
 
-            <TouchableOpacity style={styles.class} key={index} onPress={() => hadlestudentcourse(item.id, item.class, item.course, item.classCode, item.email)}>
-              <Button
-                title='Remove '
-                onPress={() => handleRemovestudentclass(item.id)}
-              />
-              <Text style={styles.classtext}>ta</Text>
-              <Text style={styles.classtext} >{item.course} ---- {item.class}</Text>
+>
+    <TouchableOpacity  key={index} onPress={() => hadlestudentcourse(item.id, item.class, item.course, item.classCode, item.email)}>
+      <View style={styles.rowContainer}>
 
-            </TouchableOpacity>
-          ))}
-        </View>
+        <Text style={styles.classtext} key={index}>{item.class.substring(0, 8)+'..'}</Text>
+        <Feather name="more-vertical" size={24} color="white"
+          style={styles.details}
+          onPress={() => handleRemoveTodo(item.id)}
+        />
+      </View>
+      <Text style={styles.classadminorstudent}>you Ta</Text>
+      <Text style={styles.classcoures}>{item.course}</Text>
+    </TouchableOpacity>
+      </ImageBackground>
+      </View>
+  ))}
+</View>
+
+
         <AddTa
           visible={modalVisible}
           onClose={() => setModalVisible(false)}
@@ -97,8 +112,9 @@ export default function HomeTA({ route }) {
   )
 }
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  rowContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   background: {
     backgroundColor: '#121636',
@@ -107,6 +123,33 @@ const styles = StyleSheet.create({
     height: '100%',
     zIndex: -1,
 },
+  classtext: {
+    margin: 10,
+    color: 'white',
+    fontSize: 22,
+    fontWeight: '700',
+    textTransform:'uppercase'
+  },
+  classcoures: {
+    marginLeft: 10,
+    color: 'white',
+    fontSize: 15,
+    fontWeight: '700',
+    textTransform: 'capitalize',
+    marginTop: 60
+  },
+  classadminorstudent: {
+    marginLeft: 10,
+    color: 'white',
+    fontSize: 13,
+    textTransform: 'capitalize',
+    marginTop: 13
+  },
+  details: {
+    right: 10,
+    position: 'absolute'
+  },
+ 
   add: {
     position: 'absolute',
     bottom: 10,
@@ -114,22 +157,26 @@ const styles = StyleSheet.create({
     zIndex: 100
   },
   class: {
-    height: 100,
-    width: '94%',
-    backgroundColor: '#13344A',
+    height: 170,
+    backgroundColor: '#ABB2EF',
+    width: '45%', 
+    margin: 10,
     borderRadius: 10,
-    // marginBottom:10,
-    marginTop: 10,
-    padding: 20
+  },
+  classimage: {
+    // padding:10,
+    height: '100%',
+    
   },
   classcontainer: {
-    // paddingTop:20,
-    // flex:1,
-    // justifyContent:'center',
-    alignItems: 'center',
-    position: 'relative'
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
-  classtext: {
-    color: 'white'
+  notics:{
+    color:'#ABB2EF',
+    fontSize:25,
+    fontWeight:'900',
+    marginLeft:20
   }
+
 });

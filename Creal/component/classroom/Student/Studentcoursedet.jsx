@@ -1,7 +1,9 @@
 import { View, Text, TouchableOpacity, StyleSheet,ImageBackground, Button, TextInput,ScrollView } from 'react-native'
 import React,{useState,useEffect} from 'react'
-// import {auth, firebase,firebaseConfig} from '../../../firebase'
-// import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { collection, doc, onSnapshot, query, where, getDocs, getDocFromCache, setDoc, addDoc, push, ref } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { db } from '../../../firebase'
+const auth = getAuth();
 import Background from '../../../Image/back.png'
 
 export default function Studentcoursedet({route,navigation}) {
@@ -12,13 +14,13 @@ export default function Studentcoursedet({route,navigation}) {
   const [notestudent,setnotestudent] = useState([])
   const [noteadmin,setnoteadmin] = useState([])
   const durationInMinutes=1
-//  useEffect(()=>{
-//   fetchmassage(id)
-//   fetchmassageAdmin(id)
-//     startCountdown(durationInMinutes);
+ useEffect(()=>{
+  fetchmassage()
+  fetchmassageAdmin()
+    // startCountdown(durationInMinutes);
 
 
-//  },[durationInMinutes])
+ },[])
 
  
 //  useEffect(() => {
@@ -43,50 +45,47 @@ export default function Studentcoursedet({route,navigation}) {
  const handleChangeText = (inputText) => {
   settext(inputText);
 };
-   const fetchmassage=(Id)=>{
-    const currentUser = firebase.auth().currentUser;
-    const uid= currentUser.email
-    try{
-      firebase.firestore().collection('ClassCreateByAdmin').doc(Id).collection('massages').where('email', '==', uid).onSnapshot(snapshot => {
-        const todosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        // console.log('student',todosData)
-        setnotestudent(todosData)
-      });
+   const fetchmassage=async()=>{
+    const user= auth.currentUser;
+    try {
+      const q = query(collection(db, 'ClassCreateByAdmin', Id, 'massages'),where('email', '==', user.email));
+      const snapshot = await getDocs(q);
+      const todosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setnotestudent(todosData);
     }catch(err){
-  console.log(err)
-   
+  console.log('error',err)
     }
       
    }
-  //  const fetchmassageAdmin=(id)=>{
-  //   try{
-  //     firebase.firestore().collection('ClassCreateByAdmin').doc(id).collection('massages').where('email', '==', adminemail)
-  //     .onSnapshot(snapshot => {
-  //       const todosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  //       setnoteadmin(todosData);
-  //     });
+   const fetchmassageAdmin=async(id)=>{
+    try {
+      const q = query(collection(db, 'ClassCreateByAdmin', Id, 'massages'),where('email', '==', email));
+      const snapshot = await getDocs(q);
+      const todosData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+       setnoteadmin(todosData);
       
-  //   }catch(err){
-  // console.log(err)
-  //   }
       
-  //  }
+    }catch(err){
+  console.log(err)
+    }
+      
+   }
 
-  const hadleIncourse=async(Id)=>{
-    const currentUser = firebase.auth().currentUser;
-    const uid= currentUser.email
-    try{
-
-      const ref= firebase.firestore().collection('ClassCreateByAdmin').doc(Id).collection('massages');
-      await ref.add({
-        email:uid,
+  const hadleIncourse=async()=>{
+    const user = auth.currentUser;
+    try {
+      const q = query(collection(db, "ClassCreateByAdmin"), where('classCode', '==', classcode));
+      const snapshot = await getDocs(q);
+      const classDoc = snapshot.docs[0];
+      const studentDocRef = await addDoc(collection(classDoc.ref, "massages"), {
+        email: user.email,
         textes,
         date,
         time
       });
       settext('')
-    }catch(err){
-      console.log(err)
+    } catch (error) {
+      console.error('Error joining class: ', error);
     }
 
   }
@@ -143,7 +142,7 @@ export default function Studentcoursedet({route,navigation}) {
       <ScrollView>
       <View style={styles.containersmallnote}>
   
-      {/* 
+      
 
       {noteadmin && noteadmin.map((item,index)=>(
         <Text key={index}>{item.email}  {item.date} {item.time} {item.textes} </Text>
@@ -152,14 +151,14 @@ export default function Studentcoursedet({route,navigation}) {
         <Text key={index}>{item.email}  {item.date} {item.time} {item.textes} </Text>
         ))}
 
- */}
+
         <TextInput
       placeholder='add some notes'
       value={textes}
       onChangeText={handleChangeText}
       />
       <Button title='add' 
-      // onPress={()=>hadleIncourse(studentdetails.id)}
+      onPress={()=>hadleIncourse()}
       
       />
 </View>

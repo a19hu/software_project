@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "623795247980",
+    "firebase_url": "https://instgram-demo-95594-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "instgram-demo-95594",
+    "storage_bucket": "instgram-demo-95594.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:623795247980:android:664f71beb5fb4c20e1b149",
+        "android_client_info": {
+          "package_name": "com.a19hu20osh.Creal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwTOEss9ZQaVWxitSRJ_KdA_CGIh6-4dA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

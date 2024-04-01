@@ -25,25 +25,35 @@ export default function SighUp({ navigation }) {
         error: ''
       })
       const signUp=async()=> {
+        console.log('value',value)
         if (value.email === '' || value.password === '' || value.name === '' ) {
+          ToastAndroid.show('value.error', ToastAndroid.SHORT);
           setValue({
             ...value,
             error: 'Email and password are mandatory.'
           })
-          ToastAndroid.show(value.error, ToastAndroid.SHORT);
-
+  
           return;
         }
     
         try {
-            await createUserWithEmailAndPassword(auth, value.email, value.password);
-            navigation.navigate('SignIn');
+          console.log('press2')
+          const userCredential  = await createUserWithEmailAndPassword(auth, value.email, value.password);
+          const user = userCredential.user;
+          await updateProfile(user, { displayName: username });
+          console.log("User registered successfully:", user);
+          console.log('press1')
+          setValue('')
+          navigation.navigate('SignIn');
+          return user;
           } catch (error) {
             setValue({
               ...value,
               error: error.message,
             })
+            console.log('error',error)
             ToastAndroid.show(value.error, ToastAndroid.SHORT);
+             
           }
         }
         const pickDocument = async () => {

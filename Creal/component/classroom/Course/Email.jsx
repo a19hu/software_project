@@ -5,12 +5,12 @@ import * as Print from 'expo-print';
 import { useRoute } from '@react-navigation/native'; 
 export default function Email() {
   const route = useRoute(); 
-  const { Id,details } = route.params;
+  const {id, Id, classname, coursename, classcode, userId } = route.params;
   const [available,setavailable]= useState(false)
   const [recipients,setrecipients]=useState([])
   const [email,setemail]= useState(undefined)
   const subject ='hii'
-  const body = Id
+  const body = id
   useEffect(()=>{
    async function checkavailable(){
     const available = await MailComposer.isAvailableAsync()

@@ -1,21 +1,24 @@
-import { View, Text, TouchableOpacity, StyleSheet,ImageBackground, Button, TextInput,ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Button, TextInput, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { db } from '../../../firebase'
 import * as Clipboard from 'expo-clipboard';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 const auth = getAuth();
 import Background from '../../../Image/back.png'
-import { collection, doc, onSnapshot, query, where, getDocs, getDocFromCache, setDoc, addDoc, push,ref  } from "firebase/firestore";
+import { collection, doc, onSnapshot, query, where, getDocs, getDocFromCache, setDoc, addDoc, push, ref } from "firebase/firestore";
 
 export default function Coursedetails({ route }) {
   const [textes, settext] = useState()
   const [note, setnote] = useState([])
+  const [classCodes,setcourseid]=useState()
+
+  const timerData = { timerValue: 120 }
   const { Id, classname, coursename, classcode, userId } = route.params;
   const copyToClipboard = async () => {
-    await Clipboard.setStringAsync(details.classCode);
+    await Clipboard.setStringAsync(classcode);
   };
   const copyToClipboardUSER = async () => {
-    await Clipboard.setStringAsync(details.userId);
+    await Clipboard.setStringAsync(Id);
   };
 
   useEffect(() => {
@@ -33,7 +36,7 @@ export default function Coursedetails({ route }) {
         }
       }
     })
-  }, []);
+  }, [note]);
   const currentDate = new Date();
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth() + 1;
@@ -44,30 +47,41 @@ export default function Coursedetails({ route }) {
   const time = currentHour + ":" + currentMinute
 
   const replyhandle = async (Id) => {
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        const uid = user.uid;
-        try {
-        //   await setDoc(doc(db, 'ClassCreateByAdmin', Id, 'massages'), {
-        //     email: uid,
-        // textes,
-        // date,
-        // time
-        //   });
-        const massagesCollectionRef = collection(db, 'ClassCreateByAdmin', Id, 'massages');
-  await addDoc(massagesCollectionRef, {
-    email: uid, 
-    textes, 
-    date,
-    time 
-  });
+    const user = auth.currentUser;
+    try {
+      const q = query(collection(db, "ClassCreateByAdmin"), where('classCode', '==', classcode));
+      const snapshot = await getDocs(q);
+      const classDoc = snapshot.docs[0];
+      const studentDocRef = await addDoc(collection(classDoc.ref, "massages"), {
+        email: user.email,
+        textes,
+        date,
+        time
+      });
       settext('')
-        } catch (error) {
-          console.error("Error fetching data: ", error);
-        }
-      }
-    })
-    
+    } catch (error) {
+      console.error('Error joining class: ', error);
+    }
+
+
+
+  }
+  const camerastart=async()=>{
+    try {
+      const q = query(collection(db, "ClassCreateByAdmin"), where('classCode', '==', classCodes));
+            const snapshot = await getDocs(q);
+            if (snapshot.empty) {
+              throw new Error('Class not found with this code');
+            }
+            const classDoc = snapshot.docs[0];
+            const studentDocRef = await addDoc(collection(classDoc.ref, "timer"), {
+              time:classCodes
+            });
+            setcourseid('')
+    } catch (error) {
+      console.error("Error setting timer document1:", error);
+    }
+
   }
   const handleChangeText = (inputText) => {
     settext(inputText);
@@ -75,69 +89,72 @@ export default function Coursedetails({ route }) {
 
   return (
     <ImageBackground
-            source={Background}
-            style={styles.background}
-            resizeMode='repeat'
-        >
-    <View style={styles.container}>
-      <View style={styles.containersmall}>
-        <View style={styles.info}>
-    <ImageBackground
-            source={Background}
-            style={styles.backgroundinfo}
+      source={Background}
+      style={styles.background}
+      resizeMode='repeat'
+    >
+      <View style={styles.container}>
+        <View style={styles.containersmall}>
+          <View style={styles.info}>
+            <ImageBackground
+              source={Background}
+              style={styles.backgroundinfo}
             >
 
-        <Text style={styles.classname} >{classname} </Text>
-        <Text style={styles.classtext} > {coursename}</Text>
-               <View style={styles.buttoncopy}>
+              <Text style={styles.classname} >{classname} </Text>
+              <Text style={styles.classtext} > {coursename}</Text>
+              <View style={styles.buttoncopy}>
 
-        <TouchableOpacity onPress={copyToClipboard} style={styles.button}>
-                <Text style={styles.copy}>
-                copy class code
-                  
-                </Text>
-               </TouchableOpacity>
-               <TouchableOpacity onPress={copyToClipboardUSER} style={styles.button}>
-                <Text style={styles.copy}>
-                copy useid
-                </Text>
-               </TouchableOpacity>
-               </View>
-        
-      </ImageBackground>
-        </View>
-      <View style={styles.camera}>
-   <TextInput
-   placeholder='add time'
-   style={styles.input}
-   />
-   <TouchableOpacity style={styles.button}>
-                <Text style={styles.copy}>
+                <TouchableOpacity onPress={copyToClipboard} style={styles.button}>
+                  <Text style={styles.copy}>
+                    copy class code
+
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={copyToClipboardUSER} style={styles.button}>
+                  <Text style={styles.copy}>
+                    copy useid
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+            </ImageBackground>
+          </View>
+          <View style={styles.camera}>
+            <TextInput
+              placeholder='add time'
+              style={styles.input}
+              value={classCodes}
+              onChangeText={(text) => setcourseid(text)}
+              
+            />
+            <TouchableOpacity style={styles.button} onPress={() => camerastart(timerData)}>
+              <Text style={styles.copy}>
                 Camera start
-                </Text>
-               </TouchableOpacity>
+              </Text>
+            </TouchableOpacity>
+
+          </View>
+
+
+        </View>
+        <ScrollView>
+          <View style={styles.containersmallnote}>
+
+
+            {note && note.map((item, index) => (
+              <Text key={index}>{item.email}  {item.date} {item.time} {item.textes} </Text>
+            ))}
+            <TextInput
+              placeholder='add some notes'
+              value={textes}
+              onChangeText={handleChangeText}
+            />
+            <Button title='add' onPress={() => replyhandle()} />
+          </View>
+        </ScrollView>
 
       </View>
-
-
-      </View>
-      <ScrollView>
-      <View style={styles.containersmallnote}>
-
-
-      {note && note.map((item,index)=>(
-        <Text key={index}>{item.email}  {item.date} {item.time} {item.textes} </Text>
-        ))}
-        <TextInput
-      placeholder='add some notes'
-      value={textes}
-      onChangeText={handleChangeText}
-      />
-      <Button title='add' onPress={()=>replyhandle(id)}/>
-</View>
-      </ScrollView>
- 
-    </View>
     </ImageBackground>
   )
 }
@@ -148,97 +165,97 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     zIndex: -1,
-},
-backgroundinfo: {
-  backgroundColor: '#ABB2EF',
+  },
+  backgroundinfo: {
+    backgroundColor: '#ABB2EF',
     flex: 1,
     width: '100%',
     height: '100%',
-    zIndex:10,
+    zIndex: 10,
     borderRadius: 20,
-    padding:10,
-    position:'absolute'
+    padding: 10,
+    position: 'absolute'
 
-},
-info:{
-  height: 170,
-  width:'100%',
-  borderRadius: 20,
+  },
+  info: {
+    height: 170,
+    width: '100%',
+    borderRadius: 20,
 
 
-  
-},
 
-container:{
-    alignItems:'center',
+  },
 
-},
-containersmall:{
-  height: 250,
-  width: '94%',
-  backgroundColor: '#D0D5FF',
+  container: {
+    alignItems: 'center',
+
+  },
+  containersmall: {
+    height: 250,
+    width: '94%',
+    backgroundColor: '#D0D5FF',
     borderRadius: 20,
     marginTop: 20,
-    marginBottom: 20, 
+    marginBottom: 20,
 
-},
+  },
   class: {
     backgroundColor: '#ABB2EF',
     padding: 20
   },
   classtext: {
     color: 'white',
-    fontWeight:'700',
+    fontWeight: '700',
     fontSize: 20,
-    marginTop:20
+    marginTop: 20
   },
-  classname:{
+  classname: {
     color: 'white',
-    fontWeight:'900',
+    fontWeight: '900',
     fontSize: 27,
-    textTransform:'uppercase',
-    marginTop:10
+    textTransform: 'uppercase',
+    marginTop: 10
   },
-  buttoncopy:{
+  buttoncopy: {
     flexDirection: 'row',
-    position:'absolute',
+    position: 'absolute',
     bottom: 0
   },
-  button:{
+  button: {
     backgroundColor: '#121636',
     padding: 10,
     borderRadius: 50,
     borderColor: '#121636',
-    width:'50%',
-    borderWidth:1,
-    margin:2,
-    justifyContent:'center',
-    alignItems:'center', 
+    width: '50%',
+    borderWidth: 1,
+    margin: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  input:{
+  input: {
     padding: 10,
     borderRadius: 50,
     borderColor: '#121636',
-    width:'45%',
-    borderWidth:1,
-    marginLeft:12,
-    justifyContent:'center',
-    alignItems:'center', 
-    marginBottom:5
+    width: '45%',
+    borderWidth: 1,
+    marginLeft: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 5
   },
-  copy:{
+  copy: {
     color: 'white',
-    fontWeight:'700',
+    fontWeight: '700',
   },
-  camera:{
+  camera: {
     flexDirection: 'row',
-    position:'absolute',
+    position: 'absolute',
     bottom: 0
   },
-  containersmallnote:{
+  containersmallnote: {
     height: 250,
-  // width: '94%',
-  backgroundColor: '#D0D5FF',
+    // width: '94%',
+    backgroundColor: '#D0D5FF',
     borderRadius: 20,
     marginTop: 20,
     // marginBottom: 20, 

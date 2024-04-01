@@ -23,7 +23,7 @@ export default{
     "splash": {
       "image": "./assets/logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#121636"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -34,9 +34,10 @@ export default{
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#121636"
       },
-      "package": "com.IITJ.Creal",
+      "package": "com.a19hu20osh.Creal",
+      "googleServicesFile": "./path/to/google-services.json"
     },
     "web": {
       "favicon": "./assets/logo.png"

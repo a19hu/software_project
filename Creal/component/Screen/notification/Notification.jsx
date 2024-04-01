@@ -18,7 +18,7 @@ export default function Notification() {
   const responseListener = useRef();
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+    registerForPushNotificationsAsync().then(token => console.log(token));
 
     notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
       setNotification(notification);
@@ -64,7 +64,7 @@ async function schedulePushNotification() {
       body: 'Here is the notification body',
       data: { data: 'goes here' },
     },
-    trigger: { seconds: 2 },
+    trigger: { seconds: 1 },
   });
 }
 
@@ -91,11 +91,11 @@ async function registerForPushNotificationsAsync() {
       alert('Failed to get push token for push notification!');
       return;
     }
-    token = (await Notifications.getExpoPushTokenAsync({ projectId: 'your-project-id' })).data;
-    console.log(token);
+    token = (await Notifications.getExpoPushTokenAsync({ projectId: '1dc90a42-0200-438e-bf19-ca31d29bd41c' })).data;
+    // console.log(token);
   } else {
     alert('Must use physical device for Push Notifications');
   }
-
+  console.log('jhsfdjio',token)
   return token;
 }

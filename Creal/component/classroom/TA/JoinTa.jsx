@@ -1,6 +1,9 @@
 import { View, Text,TextInput,Button } from 'react-native'
 import React,{useState} from 'react'
-import {firebase} from '../../../firebase'
+import { getAuth } from "firebase/auth";
+import { collection, query, where, getDocs,doc,addDoc } from "firebase/firestore";
+const auth = getAuth();
+import { db } from '../../../firebase'
 
 export default function JoinTa({ route }) {
   // const { setclassid} = route.params;
@@ -11,29 +14,32 @@ export default function JoinTa({ route }) {
       setcourseid('')
 
     }
-    const joinClass = async (classCodes) => {
-      const currentUser = firebase.auth().currentUser;
-      // console.log(currentUser.uid)
-     
-      try {
-        const querySnapshot = await firebase.firestore().collection('ClassCreateByAdmin').where('userId', '==', classCodes).get();
-        if (querySnapshot.empty) {
-          throw new Error('Class not found with this code');
-        }
-        const classDoc = querySnapshot.docs[0];
-        const classId = classDoc.id;
-        await classDoc.ref.collection('TA').add({
-          name:currentUser.email,
-          uid:currentUser.uid,
-          userId:courseid
-          
-        });
-        return classId; 
-      } catch (error) {
-        console.error('Error joining class: ', error);
-        throw error;
-      }
-      
+    const joinClass = async () => {
+      const user = auth.currentUser;
+          try {
+            const q = collection(db, "ClassCreateByAdmin");
+            const snapshot = await getDocs(q);
+            let classDoc;
+  snapshot.forEach(doc => {
+    console.log('doc',doc.id)
+    if (doc.id === courseid) { 
+      classDoc = doc;
+    }
+    // else{
+    //   throw new Error('Class not found with this code');
+
+    // }
+  });
+            const studentDocRef = await addDoc(collection(classDoc.ref, "Ta"), {
+              name: user.email,
+              uid: user.uid
+            });
+            setcourseid('')
+          } catch (error) {
+            console.error('Error joining class: ', error);
+            throw error;
+          }
+        
     };
     
   return (

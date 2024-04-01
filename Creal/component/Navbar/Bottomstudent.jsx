@@ -8,6 +8,7 @@ import { BlurView } from 'expo-blur';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FontAwesome } from '@expo/vector-icons';
+import Leav from '../classroom/Course/Leav';
 export default function Bottomstudent({ route }) {
   const {Id, classname, coursename, classcode, userId } = route.params;
   return (
@@ -41,9 +42,17 @@ export default function Bottomstudent({ route }) {
      options={{
       headerShown: false,
       tabBarIcon: ({color}) => (<FontAwesome name="list-alt" size={24} color={color} /> )}} 
+      initialParams={{Id, classname, coursename, classcode, userId}} 
    
     
-    initialParams={{Id, classname, coursename, classcode, userId}}
+    />
+    <Tab.Screen name="Leav" component={Leav} 
+     options={{
+      headerShown: false,
+      tabBarIcon: ({color}) => (<FontAwesome name="list-alt" size={24} color={color} /> )}} 
+      initialParams={{Id, classname, coursename, classcode, userId}} 
+   
+    
     />
   </Tab.Navigator>
   )

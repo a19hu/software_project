@@ -9,7 +9,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 export default function ClassStudent({ route }) {
-  const {Id, classname, coursename, classcode, email } = route.params;
+  const {Id, classname, coursename, classcode, email} = route.params;
   return (
     <Tab.Navigator 
     screenOptions={{
@@ -39,6 +39,8 @@ export default function ClassStudent({ route }) {
     }} 
     />
     <Tab.Screen name="StudentLeave" component={StudentLeave} 
+      initialParams={{Id, classname, coursename, classcode, email}}
+   
     options={{
       headerShown: false,
       tabBarIcon: ({color}) => (<AntDesign name="pdffile1" size={24} color={color} /> )}} 
